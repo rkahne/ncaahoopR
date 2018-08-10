@@ -359,7 +359,7 @@ get_roster <- function(team) {
   base_url <- "http://www.espn.com/mens-college-basketball/team/roster/_/id/"
   url <-  paste(base_url, ids$id[ids$team == team], "/", ids$link[ids$team == team], sep = "")
   tmp <- try(XML::readHTMLTable(url))
-  if(class(tmp) == "try-error") {
+  if(class(tmp) == "try-error" | length(ids$id[ids$team == team]) == 0) {
     return("Unable to get roster. ESPN is updating CBB files. Check back again soon")
   }
   tmp <- as.data.frame(tmp[[1]][-1,])
