@@ -351,15 +351,19 @@ get_game_IDs <- function(team) {
 #'
 #' Gets team roster for current season.
 #'
-#' @param team Team to get roster for
+#' @param team Either length-1 character vector of Team within ID dataframe, or length-1 numeric vector of team's ESPN ID.
 #' @return A data-frame of the team's roster for current season
 #' @export
 get_roster <- function(team) {
   print(paste("Getting Roster: ", team, sep = ""))
   base_url <- "http://www.espn.com/mens-college-basketball/team/roster/_/id/"
-  url <-  paste(base_url, ids$id[ids$team == team], "/", ids$link[ids$team == team], sep = "")
+  url <- ifelse(is.numeric(team),
+                 paste(base_url, team, sep = ""),
+                 paste(base_url, ids$id[ids$team == team], "/", ids$link[ids$team == team], sep = "")
+  )
   tmp <- try(XML::readHTMLTable(url))
-  if(class(tmp) == "try-error" | length(ids$id[ids$team == team]) == 0) {
+  if(class(tmp) == "try-error" |
+     (is.character(team) & length(ids$id[ids$team == team]) == 0)) {
     return("Unable to get roster. ESPN is updating CBB files. Check back again soon")
   }
   tmp <- as.data.frame(tmp[[1]][-1,])
